@@ -1,22 +1,31 @@
 import 'dart:io';
-import 'Usuario.dart';
+import 'Alumno.dart';
+import 'Profesor.dart';
 
 class applucas {
   menuInicial(){
     int? opcion;
     do{
       stdout.writeln('''Elige una opción
-      1 - Crear usuario
-      2 - Log in''');
+      1 - Crear alumno
+      2 - Crear profesor
+      3 - Log in alumno
+      4 - Log in profesor''');
       String respuesta = stdin.readLineSync() ?? 'e';
       opcion = int.tryParse(respuesta);
-    } while(opcion == null || opcion != 1 && opcion !=2);
+    } while(opcion == null || opcion != 1 && opcion !=2 && opcion !=3 && opcion !=4);
     switch(opcion){
       case 1:
-        crearUsuario();
+        crearUsuarioAlumno();
         break;
       case 2:
-        login();
+        crearUsuarioProfesor();
+        break;
+      case 3:
+        loginAlumno();
+        break;
+      case 4:
+        loginProfesor();
         break;
       default:
         print('Opción no válida');
@@ -24,13 +33,13 @@ class applucas {
   }
 
 
-login() async {
-    Usuario usuario = new Usuario();
+loginAlumno() async {
+    Alumno alumno = new Alumno();
     stdout.writeln('Introduce tu nombre de usuario');
-    usuario.nombre = stdin.readLineSync();
+    alumno.nombre = stdin.readLineSync();
     stdout.writeln('Introduce tu constraseña');
-    usuario.password = stdin.readLineSync();
-    var resultado = await usuario.loginUsuario();
+    alumno.password = stdin.readLineSync();
+    var resultado = await alumno.loginAlumno();
     if(resultado == false){
       stdout.writeln('Tu nombre de usuario o contraseña son incorrectos');
       menuInicial();
@@ -39,47 +48,82 @@ login() async {
     }
   }
 
-crearUsuario() async {
-    Usuario usuario = new Usuario();
-    int? opcion;
-    do{
-      stdout.writeln('''¿Qué eres?
-      1 - Profesor
-      2 - Alumno''');
-      String respuesta = stdin.readLineSync() ?? 'e';
+  loginProfesor() async {
+    Profesor profesor = new Profesor();
+    stdout.writeln('Introduce tu nombre de usuario');
+    profesor.nombre = stdin.readLineSync();
+    stdout.writeln('Introduce tu constraseña');
+    profesor.password = stdin.readLineSync();
+    var resultado = await profesor.loginProfesor();
+    if(resultado == false){
+      stdout.writeln('Tu nombre de usuario o contraseña son incorrectos');
+      menuInicial();
+    } else {
+      menuInicial();
+    }
+  }
+  
+  crearUsuarioProfesor() async {
+    Profesor profesor = new Profesor();
+    stdout.writeln('Introduce tu nombre de profesor');
+    profesor.nombre = stdin.readLineSync();
+    stdout.writeln('Introduce una constraseña');
+    profesor.password = stdin.readLineSync();
+    profesor.password = profesor.password;
+    await profesor.insertarUsuario();
+    menuInicial();
+  }
+
+  crearUsuarioAlumno() async {
+    Alumno alumno = new Alumno();
+    stdout.writeln('Introduce tu nombre de alumno');
+    alumno.nombre = stdin.readLineSync();
+    stdout.writeln('Introduce una constraseña');
+    alumno.password = stdin.readLineSync();
+    alumno.password = alumno.password;
+    await alumno.insertarUsuario();
+    menuInicial();
+  }
+}
+
+menuProfesor() {
+  int? opcion;
+  do{
+      stdout.writeln('''
+------------------------------------------
+
+      1 - Buscar alumnos
+      2 - Lista de alumnos apuntados
+      3 - Detalles de profesor
+      4 - Volver al menu inicial
+  
+------------------------------------------
+''');
+String respuesta = stdin.readLineSync() ?? 'e';
       opcion = int.tryParse(respuesta);
-    } while(opcion == null || opcion != 1 && opcion !=2);
+    } while(opcion == null || opcion != 1 && opcion !=2 && opcion !=3 && opcion !=4);
     switch(opcion){
       case 1:
-        crearUsuarioProfesor();
+        ();
         break;
       case 2:
-        crearUsuarioAlumno();
+        listarAlumnos();
+        break;
+      case 3:
+        ();
+        break;
+      case 4:
+        menuInicial();
         break;
       default:
         print('Opción no válida');
     }
   }
   
-  crearUsuarioProfesor() async {
-    Usuario usuario = new Usuario();
-    stdout.writeln('Introduce tu nombre de profesor');
-    usuario.nombre = stdin.readLineSync();
-    stdout.writeln('Introduce una constraseña');
-    usuario.password = stdin.readLineSync();
-    usuario.password = usuario.password;
-    await usuario.insertarUsuario();
-    menuInicial();
-  }
 
-  crearUsuarioAlumno() async {
-    Usuario usuario = new Usuario();
-    stdout.writeln('Introduce tu nombre de alumno');
-    usuario.nombre = stdin.readLineSync();
-    stdout.writeln('Introduce una constraseña');
-    usuario.password = stdin.readLineSync();
-    usuario.password = usuario.password;
-    await usuario.insertarUsuario();
-    menuInicial();
+  listarAlumnos()async{
+    List<Alumno> listadoAlumnos = await Alumno().all();
+    for(Alumno elemento in listadoAlumnos){
+      stdout.writeln(elemento.nombre);
+    }
   }
-}
